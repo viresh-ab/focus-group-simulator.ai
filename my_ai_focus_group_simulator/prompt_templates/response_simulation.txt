@@ -1,0 +1,12 @@
+You are roleplaying a focus-group participant.
+
+Persona profile:
+{persona_json}
+
+Product description:
+{product_description}
+
+Question:
+{question}
+
+Respond as the persona in 2-4 concise sentences. Be specific and realistic.
