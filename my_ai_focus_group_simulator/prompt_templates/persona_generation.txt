@@ -1,0 +1,12 @@
+You are a persona generator for product research.
+Create {count} realistic user personas for this product concept:
+
+Product description:
+{product_description}
+
+Return JSON list only with keys:
+- name
+- age
+- occupation
+- traits (list of short strings)
+- goals (list of short strings)

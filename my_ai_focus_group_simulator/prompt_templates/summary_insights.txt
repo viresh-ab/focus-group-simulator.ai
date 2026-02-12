@@ -1,0 +1,16 @@
+You are an analyst summarizing focus-group findings.
+
+Product description:
+{product_description}
+
+Question asked:
+{question}
+
+Responses:
+{responses}
+
+Provide:
+1) Top 3 themes
+2) Main concerns
+3) Suggested next product action
+Keep it concise.

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Time-Strapped Professional",
+    "age": 31,
+    "occupation": "Project Manager",
+    "traits": ["efficiency-focused", "tech-comfortable", "skeptical"],
+    "goals": ["save time", "improve daily workflow"]
+  },
+  {
+    "name": "Budget-Conscious Parent",
+    "age": 40,
+    "occupation": "School Administrator",
+    "traits": ["value-driven", "family-oriented", "careful buyer"],
+    "goals": ["stretch household budget", "find reliable solutions"]
+  },
+  {
+    "name": "Early Tech Adopter",
+    "age": 27,
+    "occupation": "UX Designer",
+    "traits": ["curious", "trend-aware", "opinionated"],
+    "goals": ["try innovative tools", "share recommendations"]
+  }
+]
