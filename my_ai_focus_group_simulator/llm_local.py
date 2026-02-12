@@ -1,4 +1,4 @@
-"""Local LLM integration via OpenAI-compatible chat completions API."""
+"""OpenAI-compatible LLM integration for local or hosted endpoints."""
 
 from __future__ import annotations
 
@@ -9,12 +9,25 @@ import requests
 
 
 class LocalLLMClient:
-    """Simple client for local LLM servers exposing /chat/completions."""
+    """Simple client for OpenAI-compatible /chat/completions APIs."""
 
-    def __init__(self, base_url: str | None = None, model: str | None = None, api_key: str | None = None) -> None:
-        self.base_url = (base_url or os.getenv("LOCAL_LLM_BASE_URL") or "http://localhost:1234/v1").rstrip("/")
-        self.model = model or os.getenv("LOCAL_LLM_MODEL") or "local-model"
-        self.api_key = api_key or os.getenv("LOCAL_LLM_API_KEY") or ""
+    def __init__(
+        self,
+        base_url: str | None = None,
+        model: str | None = None,
+        api_key: str | None = None,
+        timeout_seconds: int = 120,
+    ) -> None:
+        # Backward compatibility with existing LOCAL_* variables.
+        self.base_url = (
+            base_url
+            or os.getenv("LLM_BASE_URL")
+            or os.getenv("LOCAL_LLM_BASE_URL")
+            or "https://api.openai.com/v1"
+        ).rstrip("/")
+        self.model = model or os.getenv("LLM_MODEL") or os.getenv("LOCAL_LLM_MODEL") or "gpt-4o-mini"
+        self.api_key = api_key or os.getenv("LLM_API_KEY") or os.getenv("LOCAL_LLM_API_KEY") or ""
+        self.timeout_seconds = timeout_seconds
 
     def generate(self, prompt: str, system_prompt: str = "You are a helpful assistant.", temperature: float = 0.7) -> str:
         url = f"{self.base_url}/chat/completions"
@@ -31,7 +44,7 @@ class LocalLLMClient:
             "temperature": temperature,
         }
 
-        response = requests.post(url, json=payload, headers=headers, timeout=120)
+        response = requests.post(url, json=payload, headers=headers, timeout=self.timeout_seconds)
         response.raise_for_status()
         data = response.json()
         return data["choices"][0]["message"]["content"].strip()

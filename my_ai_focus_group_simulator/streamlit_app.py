@@ -1,9 +1,10 @@
-"""Streamlit UI for local-LLM-powered AI focus group simulation."""
+"""Streamlit UI for OpenAI-compatible AI focus group simulation."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
+import requests
 import streamlit as st
 
 from focus_group_engine import FocusGroupEngine
@@ -16,12 +17,22 @@ PERSONAS_PATH = BASE_DIR / "personas.json"
 
 
 st.set_page_config(page_title="AI Focus Group Simulator", layout="wide")
-st.title("🧪 AI Focus Group Simulator (Local LLM)")
+st.title("🧪 AI Focus Group Simulator")
 
 if "personas" not in st.session_state:
     st.session_state.personas = load_personas(PERSONAS_PATH)
 
 with st.sidebar:
+    st.header("LLM Endpoint")
+    llm_base_url = st.text_input(
+        "Base URL",
+        value="https://api.openai.com/v1",
+        help="Use any OpenAI-compatible URL (OpenAI, OpenRouter, vLLM, LM Studio, etc.).",
+    )
+    llm_model = st.text_input("Model", value="gpt-4o-mini")
+    llm_api_key = st.text_input("API Key", value="", type="password")
+
+    st.divider()
     st.header("Personas")
     st.caption(f"Loaded personas: {len(st.session_state.personas)}")
 
@@ -73,23 +84,31 @@ if run:
     elif not st.session_state.personas:
         st.error("No personas loaded. Add one in the sidebar.")
     else:
-        client = LocalLLMClient()
+        client = LocalLLMClient(base_url=llm_base_url, model=llm_model, api_key=llm_api_key)
         engine = FocusGroupEngine(client)
 
-        with st.spinner("Simulating persona responses..."):
-            df = engine.simulate_responses(
-                personas=st.session_state.personas,
+        try:
+            with st.spinner("Simulating persona responses..."):
+                df = engine.simulate_responses(
+                    personas=st.session_state.personas,
+                    product_description=product_description,
+                    questions=questions,
+                )
+
+            st.subheader("3) Responses DataFrame")
+            st.dataframe(df, use_container_width=True)
+
+            st.subheader("4) Summary Report")
+            report = engine.build_summary_report(
+                df=df,
                 product_description=product_description,
-                questions=questions,
+                question_context=" | ".join(questions),
             )
-
-        st.subheader("3) Responses DataFrame")
-        st.dataframe(df, use_container_width=True)
-
-        st.subheader("4) Summary Report")
-        report = engine.build_summary_report(
-            df=df,
-            product_description=product_description,
-            question_context=" | ".join(questions),
-        )
-        st.markdown(report)
+            st.markdown(report)
+        except requests.exceptions.RequestException as exc:
+            st.error("Could not connect to the configured LLM endpoint.")
+            st.info(
+                "Check Base URL, model name, API key, and whether the endpoint exposes "
+                "`/v1/chat/completions`."
+            )
+            st.code(str(exc))

@@ -1,6 +1,6 @@
-# AI Focus Group Simulator (Local LLM + Streamlit)
+# AI Focus Group Simulator (OpenAI-Compatible LLM + Streamlit)
 
-A modular Python scaffold for simulating focus-group responses from synthetic personas using a **local LLM endpoint** and visualizing results in **Streamlit**.
+A modular Python scaffold for simulating focus-group responses from synthetic personas using an **OpenAI-compatible LLM endpoint** and visualizing results in **Streamlit**.
 
 ## Project Structure
 
@@ -22,7 +22,7 @@ my_ai_focus_group_simulator/
 
 ## Features
 
-- Local LLM client that targets an OpenAI-compatible local endpoint (LM Studio, Ollama bridge, vLLM, llama.cpp server, etc.).
+- OpenAI-compatible LLM client for local or hosted endpoints (OpenAI, OpenRouter, LM Studio, vLLM, llama.cpp, etc.).
 - JSON-based persona storage with load/save utilities.
 - Prompt templates stored separately from code.
 - Focus-group simulation engine with one response per persona-question pair.
@@ -44,26 +44,28 @@ source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 ```
 
-### 3) Start your local LLM endpoint
+### 3) Choose an LLM endpoint
 
-Use any local model server with an OpenAI-compatible `/v1/chat/completions` endpoint.
+Use any endpoint that supports OpenAI chat completions (`/v1/chat/completions`).
 
 Examples:
-- **LM Studio local server**
-- **vLLM OpenAI server**
-- **llama.cpp server with OpenAI-compatible mode**
+- **OpenAI API**
+- **OpenRouter**
+- **LM Studio / vLLM / llama.cpp (self-hosted)**
 
-### 4) Configure environment variables (optional)
+You can configure endpoint credentials in either:
+- the Streamlit sidebar fields (Base URL / Model / API Key), or
+- environment variables:
 
 ```bash
-export LOCAL_LLM_BASE_URL="http://localhost:1234/v1"
-export LOCAL_LLM_MODEL="local-model-name"
-export LOCAL_LLM_API_KEY="not-required-for-most-local-endpoints"
+export LLM_BASE_URL="https://api.openai.com/v1"
+export LLM_MODEL="gpt-4o-mini"
+export LLM_API_KEY="your-key"
 ```
 
-Defaults are defined in `llm_local.py` if not set.
+Backward-compatible variables (`LOCAL_LLM_*`) are also supported.
 
-### 5) Run Streamlit app
+### 4) Run Streamlit app
 
 ```bash
 streamlit run streamlit_app.py
@@ -87,5 +89,5 @@ streamlit run streamlit_app.py
 
 ## Notes
 
-- This scaffold prioritizes simplicity and local-first development.
+- This scaffold prioritizes simplicity and endpoint flexibility (hosted or local).
 - For production, add retries, richer evaluation, observability, and stronger prompt/version controls.
