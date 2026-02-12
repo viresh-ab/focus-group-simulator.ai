@@ -8,11 +8,17 @@ from typing import Dict
 import pandas as pd
 
 
-PROMPT_DIR = Path("prompt_templates")
+BASE_DIR = Path(__file__).resolve().parent
+PROMPT_DIR = BASE_DIR / "prompt_templates"
 
 
 def load_prompt_template(template_name: str, prompt_dir: Path | str = PROMPT_DIR) -> str:
     path = Path(prompt_dir) / template_name
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Prompt template not found: {path}. "
+            "Ensure the prompt_templates folder is packaged with the app."
+        )
     with path.open("r", encoding="utf-8") as f:
         return f.read()
 
